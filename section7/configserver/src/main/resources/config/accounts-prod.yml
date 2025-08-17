@@ -1,0 +1,11 @@
+build:
+  version: "3.0"
+
+accounts:
+  message: "Welcome to nvm10 account ms prod APIs."
+  contactDetails:
+    name: "John Doe Prod"
+    email: "john@doeprod.com"
+  onCallSupport:
+    -(555) 555-1234
+    -(555) 555-1235

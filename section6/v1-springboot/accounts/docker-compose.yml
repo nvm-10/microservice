@@ -1,0 +1,40 @@
+services:
+  accounts:
+    image: "nvm10/accounts:v1"
+    container_name: accounts-ms
+    ports:
+      - "9090:9090"
+    deploy:
+      resources:
+        limits:
+          memory: 700m
+    networks:
+      - nvm10
+
+  loans:
+    image: "nvm10/loans:v1"
+    container_name: loans-ms
+    ports:
+      - "9092:9092"
+    deploy:
+      resources:
+        limits:
+          memory: 700m
+    networks:
+      - nvm10
+
+  card:
+    image: "nvm10/card:v1"
+    container_name: card-ms
+    ports:
+      - "9091:9091"
+    deploy:
+      resources:
+        limits:
+          memory: 700m
+    networks:
+      - nvm10
+
+networks:
+  nvm10:
+    driver: bridge

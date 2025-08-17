@@ -1,0 +1,123 @@
+services:
+  accountdb:
+    image: mysql
+    container_name: accountsdb
+    ports:
+      - "3306:3306"
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 10s
+      retries: 10
+      interval: 10s
+      start_period: 10s
+    environment:
+      MYSQL_DATABASE: accountdb
+      MYSQL_ROOT_PASSWORD: root
+    extends:
+      file: common-config.yml
+      service: microservice-base-config
+
+  carddb:
+    image: mysql
+    container_name: carddb
+    ports:
+      - "3308:3306"
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
+      timeout: 10s
+      retries: 10
+      interval: 10s
+      start_period: 10s
+    environment:
+      MYSQL_DATABASE: carddb
+      MYSQL_ROOT_PASSWORD: root
+    extends:
+      file: common-config.yml
+      service: microservice-base-config
+  loansdb:
+    image: mysql
+    container_name: loansdb
+    ports:
+      - "3307:3306"
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
+      timeout: 10s
+      retries: 10
+      interval: 10s
+      start_period: 10s
+    environment:
+      MYSQL_DATABASE: loansdb
+      MYSQL_ROOT_PASSWORD: root
+    extends:
+      file: common-config.yml
+      service: microservice-base-config
+
+  configserver:
+    image: "nvm10/configserver:v3"
+    container_name: configserver-ms
+    ports:
+      - "8071:8071"
+    healthcheck:
+      test: "curl --fail --silent localhost:8071/actuator/health/readiness | grep UP || exit 1"
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+    extends:
+      file: common-config.yml
+      service: microservice-base-config
+
+  accounts:
+    image: "nvm10/accounts:v3"
+    container_name: accounts-ms
+    ports:
+      - "9090:9090"
+    depends_on:
+      configserver:
+        condition: service_healthy
+      accountdb:
+        condition: service_healthy
+    environment:
+      SPRING_APPLICATION_NAME: "accounts"
+      SPRING_DATASOURCE_URL: "jdbc:mysql://accountdb:3306/accountdb"
+    extends:
+      file: common-config.yml
+      service: microservice-configserver-config
+
+  loans:
+    image: "nvm10/loans:v3"
+    container_name: loans-ms
+    ports:
+      - "9092:9092"
+    depends_on:
+      configserver:
+        condition: service_healthy
+      loansdb:
+        condition: service_healthy
+    environment:
+      SPRING_APPLICATION_NAME: "loans"
+      SPRING_DATASOURCE_URL: "jdbc:mysql://loansdb:3306/loansdb"
+    extends:
+      file: common-config.yml
+      service: microservice-configserver-config
+
+  card:
+    image: "nvm10/card:v3"
+    container_name: card-ms
+    ports:
+      - "9091:9091"
+    depends_on:
+      configserver:
+        condition: service_healthy
+      carddb:
+        condition: service_healthy
+    environment:
+      SPRING_APPLICATION_NAME: "card"
+      SPRING_DATASOURCE_URL: "jdbc:mysql://carddb:3306/carddb"
+    extends:
+      file: common-config.yml
+      service: microservice-configserver-config
+
+networks:
+  nvm10:
+    driver: "bridge"

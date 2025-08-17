@@ -1,0 +1,33 @@
+spring:
+  application:
+    name: loans
+  datasource:
+    url: jdbc:mysql://localhost:3307/loansdb
+    username: root
+    password: root
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: update  # or create-drop for development
+      database-platform: org.hibernate.dialect.MySQL8Dialect
+  sql:
+    init:
+      mode: always
+  profiles:
+    active: default
+  config:
+    import: optional:configserver:http://localhost:8071
+#  rabbitmq:
+#    host: "localhost"
+#    port: 5672
+#    username: guest
+#    password: guest
+
+server:
+  port: 9092
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"

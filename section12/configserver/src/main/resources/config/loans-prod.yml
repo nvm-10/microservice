@@ -1,0 +1,11 @@
+build:
+  version: "3.3"
+
+accounts:
+  message: "Welcome to nvm10 account ms APIs."
+  contactDetails:
+    name: "John Doe"
+    email: "john@doe.com"
+  onCallSupport:
+    -(555) 555-1234
+    -(555) 555-1235
